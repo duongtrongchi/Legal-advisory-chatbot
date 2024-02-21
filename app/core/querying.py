@@ -22,8 +22,8 @@ if __name__ == '__main__':
     print(window_response)
 
 
-    for i in window_response.source_nodes:
-        print('REFRENCES: \n')
-        print(i.score)
-        print(i.text)
-        print('='*100)
+    # for i in window_response.source_nodes:
+    #     print('REFRENCES: \n')
+    #     print(i.score)
+    #     print(i.text)
+    #     print('='*100)
