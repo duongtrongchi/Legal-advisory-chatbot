@@ -22,12 +22,15 @@ if __name__ == '__main__':
             MetadataReplacementPostProcessor(target_metadata_key="window"),
             rerank_model,
         ],
-        ext_qa_template = text_qa_template
+        vector_store_query_mode="hybrid", 
+        alpha=0.5,
+        text_qa_template = text_qa_template
     )
 
     window_response = query_engine.query(
         # "Nghĩa vụ của thương nhân khi thanh tra thương mại thực hiện việc kiễm tra là gì?"
-        "Trộm cắp điện là hành vi gì?"
+        "Trộm cắp điện là hành vi gì?",
+        # "Bệnh lậu là bệnh gì?"
     )
     print(window_response)
 

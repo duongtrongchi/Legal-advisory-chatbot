@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 
 import openai
 import os
+os.environ["OPENAI_API_KEY"] = "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"
 load_dotenv()
 
 import logging
