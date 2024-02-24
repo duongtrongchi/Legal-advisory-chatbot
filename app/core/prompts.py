@@ -17,3 +17,15 @@ text_qa_template_str = (
     "Trả lời câu hỏi:{query_str}\n"
 )
 text_qa_template = PromptTemplate(text_qa_template_str)
+
+answer_gen_str = """\
+Thông tin ngữ cảnh được cung cấp dưới đây.
+---------------------
+{context_str}
+---------------------
+Sử dụng thông tin ngữ cảnh được cung cấp ở trên và không dùng kiến thức trước đó, trả lời câu truy vấn.
+Câu truy vấn: {query_str}
+Câu trả lời: \
+"""
+
+answer_gen_prompt = PromptTemplate(answer_gen_str)
