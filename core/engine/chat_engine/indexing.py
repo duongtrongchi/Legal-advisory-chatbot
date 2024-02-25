@@ -23,6 +23,7 @@ os.environ['NUMEXPR_MAX_THREADS'] = '4'
 os.environ['NUMEXPR_NUM_THREADS'] = '2'
 
 
+
 def indexing_data():
     try:
         storage_context = StorageContext.from_defaults(persist_dir='../assets/cache/law/')
