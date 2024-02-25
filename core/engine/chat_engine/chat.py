@@ -35,7 +35,7 @@ class ChatEngine:
         self.documents = SimpleDirectoryReader(documents_path).load_data()
         self.sentence_nodes = self.node_parser.get_nodes_from_documents(self.documents)
         self.storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
-        self.index = None
+        self.index = VectorStoreIndex.from_vector_store(self.vector_store, storage_context=self.storage_context)
         if new_indexing:
             self.index = VectorStoreIndex(
                 self.sentence_nodes,
