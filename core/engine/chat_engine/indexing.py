@@ -1,14 +1,10 @@
-from dotenv import load_dotenv
-
-import openai
-import os
-load_dotenv()
-
-import logging
 import sys
 import os
+import logging
+from dotenv import load_dotenv
+load_dotenv()
 
-import numexpr as ne
+import openai
 
 from llama_index import (
     VectorStoreIndex,
@@ -22,7 +18,6 @@ from llama_index.node_parser import SentenceWindowNodeParser
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 openai.api_key = os.getenv('OPENAI_API_KEY')
-
 
 os.environ['NUMEXPR_MAX_THREADS'] = '4'
 os.environ['NUMEXPR_NUM_THREADS'] = '2'
