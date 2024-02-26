@@ -28,4 +28,15 @@ class ChatEngineView(APIView):
 
 
 def get_template(request):
-    return render(request, 'engine/component.html', {'project_list':"Hello world"})
+    if request.method == 'POST':
+        question = request.data.get('question', None)
+
+        if question is None:
+            return render(request, 'engine/component.html', {'response':"Không nhận được câu trả lời!!!"})
+
+        queries = generate_queries(question)
+        response = ChatEngine()
+        response = response.chat_en(queries, question)
+        return render(request, 'engine/component.html', {'response':response})
+
+    return render(request, 'engine/component.html', {'response':"ERROR!!!"})
