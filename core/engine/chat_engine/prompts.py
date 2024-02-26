@@ -16,4 +16,14 @@ text_qa_template_str = (
     "---------------------\n"
     "Trả lời câu hỏi:{query_str}\n"
 )
+
+REWRITE_QUERIES_TEMPLATE = """
+Bạn là một trợ lý hữu ích trong việc tạo ra nhiều câu truy vấn tương tự hoặc có liên quan nhất dựa trên \
+một câu truy vấn đầu vào. Tạo {num_queries} câu truy vấn, một câu trên mỗi dòng, sắp xếp thứ tự theo độ liên quan từ cao xuống thấp,\
+liên quan tới câu truy vấn dưới đây:
+Câu truy vấn: {query}
+Các câu truy vấn tạo ra:
+"""
+
+REWRITE_QUERIES_TEMPLATE = PromptTemplate(REWRITE_QUERIES_TEMPLATE)
 text_qa_template = PromptTemplate(text_qa_template_str)

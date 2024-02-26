@@ -6,10 +6,10 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-from .chat_engine.chat import generation
+from .chat_engine.chat import ChatEngine, generate_queries
 
 
-class ChatEngine(APIView):
+class ChatEngineView(APIView):
 
     def post(self, request ,format=None):
         question = request.data.get('question', None)
@@ -17,5 +17,8 @@ class ChatEngine(APIView):
         if question is None:
             return Response({'response': 'Không nhận được câu hỏi!!!'}, status=status.HTTP_400_BAD_REQUEST)
 
-        response = generation(question)
+        queries = generate_queries(question)
+        response = ChatEngine()
+        response = response.chat_en(queries, question)
+
         return Response({'response': response}, status=status.HTTP_200_OK)

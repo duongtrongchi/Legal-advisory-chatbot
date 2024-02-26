@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import ChatEngine
+from .views import ChatEngineView
 
 
 urlpatterns = [
-    path('chat/', ChatEngine.as_view(), name="chat-engine"),
+    path('chat/', ChatEngineView.as_view(), name="chat-engine"),
 ]
