@@ -33,6 +33,7 @@ def generate_answer(queries: list[str], query_origin):
     seen_ids = set()
     retrieved_nodes = [obj for obj in retrieved_nodes if obj.get_content() not in seen_ids and not seen_ids.add(obj.get_content())]
     print(len(retrieved_nodes))
+    print(retrieved_nodes)
     
     # Rerank 
     query_bundle = QueryBundle(query_origin)
@@ -69,6 +70,6 @@ def generate_answer(queries: list[str], query_origin):
     return response
 
 if __name__ == '__main__':
-    query = "Điều kiện xét công nhận tốt nghiệp"
+    query = "Trường TDTU có phải là trường nằm trong TOP hay không?"
     queries = generate_queries(query)
     generate_answer(queries, query)
