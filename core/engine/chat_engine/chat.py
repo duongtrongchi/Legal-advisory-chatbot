@@ -39,6 +39,34 @@ def generate_queries(query: str, num_queries: int = 3):
 
    return queries
 
+def is_folder_empty(folder_path):
+    # Check if the folder exists
+    if not os.path.exists(folder_path):
+        print(f"The folder '{folder_path}' does not exist.")
+        return True
+
+    # Get the list of files in the folder
+    files = os.listdir(folder_path)
+
+    # Check if the folder is empty
+    if not files:
+        print(f"The folder '{folder_path}' is empty.")
+        return True
+      
+    print(f"The folder '{folder_path}' contains files: {files}")
+    return False
+
+import shutil
+
+def move_file(source_path, destination_path):
+    try:
+        # Move the file from the source to the destination
+        shutil.move(source_path, destination_path)
+        print(f"File moved successfully from '{source_path}' to '{destination_path}'.")
+    except FileNotFoundError:
+        print(f"Error: The file at '{source_path}' does not exist.")
+    except Exception as e:
+        print(f"Error: {e}")
 
 class ChatEngine:
 
@@ -62,9 +90,32 @@ class ChatEngine:
                 storage_context=self.storage_context,
             )
 
-
+    def check_update_doc(self):
+        
+        # Check new update document
+        folder_path = './data/upload/'
+        if not is_folder_empty(folder_path):
+            documents = SimpleDirectoryReader(folder_path).load_data()
+            
+            # create the sentence window node parser w/ default settings
+            node_parser = SentenceWindowNodeParser.from_defaults(
+                window_size=3,
+                window_metadata_key="window",
+                original_text_metadata_key="original_text",
+            )
+            
+            new_nodes = node_parser.get_nodes_from_documents(documents)
+            self.index.insert_nodes(new_nodes)
+        
+            files = os.listdir(folder_path)
+            for file in files: 
+                source_path = f'./data/upload/{file}'
+                destination_path = './data/'
+                move_file(source_path, destination_path)
+                
     def chat_en(self, queries: list[str], query_origin):
-
+        self.check_update_doc()
+        
         retriever = self.index.as_retriever(
             similarity_top_k=3,
             # vector_store_query_mode="hybrid",
@@ -78,7 +129,11 @@ class ChatEngine:
             retrieved_nodes += retriever.retrieve(query)
         retrieved_nodes += retriever.retrieve(query_origin)
 
-
+        # Remove objects with the same content
+        seen_ids = set()
+        retrieved_nodes = [obj for obj in retrieved_nodes if obj.get_content() not in seen_ids and not seen_ids.add(obj.get_content())]
+        print(len(retrieved_nodes))
+        
         # Rerank
         query_bundle = QueryBundle(query_origin)
 
