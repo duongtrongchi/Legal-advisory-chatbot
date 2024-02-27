@@ -17,7 +17,6 @@ from ragas.metrics import (
 from ragas.metrics.critique import harmfulness
 
 
-
 os.environ['OPENAI_API_KEY'] = os.environ['OPENAI_API_KEY']
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
