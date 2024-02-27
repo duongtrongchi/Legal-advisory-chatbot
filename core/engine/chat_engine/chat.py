@@ -94,6 +94,10 @@ class ChatEngine:
             retrieved_nodes += retriever.retrieve(query)
         retrieved_nodes += retriever.retrieve(query_origin)
 
+        # Remove objects with the same content
+        seen_ids = set()
+        retrieved_nodes = [obj for obj in retrieved_nodes if obj.get_content() not in seen_ids and not seen_ids.add(obj.get_content())]
+        print(len(retrieved_nodes))
 
         # Rerank
         query_bundle = QueryBundle(query_origin)
