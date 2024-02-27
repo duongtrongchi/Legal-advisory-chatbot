@@ -29,6 +29,9 @@ logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
 os.environ['OPENAI_API_KEY'] = os.environ['OPENAI_API_KEY']
+ES_CLOUD_ID = os.environ['ES_CLOUD_ID']
+ES_API_KEY = os.environ['ES_API_KEY']
+
 openai.api_key = os.getenv('OPENAI_API_KEY')
 llm = OpenAI(model="gpt-3.5-turbo")
 
@@ -37,11 +40,9 @@ class ChatEngine:
 
     def __init__(self, documents_path="./data/", new_indexing=False):
         self.vector_store = ElasticsearchStore(
-                                # es_url="http://localhost:9200",
-                                # index_name="law_index",
                                 index_name="law_bot",
-                                es_cloud_id="a360a60c18784a4288ef610006c3b861:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDAwZGM4M2JiYjU3NjRjZTliZDJlYjEyNTAwNTA2N2MxJDQzOTI5MzIyNGNlMjRiZDZhOTRkODYzOWQyZTNlYWJl",
-                                es_api_key="bUR1b3lZMEIzSUxOY1MxYjRvMEQ6ZE9PMS01UGlSSVdvdEhncUVkWmlWQQ=="
+                                es_cloud_id=ES_CLOUD_ID,
+                                es_api_key=ES_API_KEY
         )
         self.node_parser = SentenceWindowNodeParser.from_defaults(
             window_size=3,
