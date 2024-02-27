@@ -27,7 +27,6 @@ node_parser = SimpleNodeParser.from_defaults(
   chunk_size=1024,
   chunk_overlap=20,
   tokenizer=tiktoken.encoding_for_model("gpt-3.5-turbo").encode
-
 )
 
 llm = OpenAI(model='gpt-3.5-turbo', temperature=0.7, max_tokens=256)
@@ -59,6 +58,7 @@ index = VectorStoreIndex.from_documents(
     service_context=service_context,
     storage_context=storage_context,
 )
+
 
 query_engine = index.as_query_engine(text_qa_template=base_prompt_template)
 response = query_engine.query("Cho tôi biết đại học Tôn Đức Thắng có bao nhiêu cơ sở chính và đó là cơ sở nào?")

@@ -6,7 +6,13 @@ import openai
 from dotenv import load_dotenv
 load_dotenv()
 
-from llama_index import VectorStoreIndex, SimpleDirectoryReader
+from llama_index import (
+   VectorStoreIndex,
+   SimpleDirectoryReader,
+   OpenAIEmbedding,
+   PromptHelper,
+   ServiceContext
+)
 from llama_index.indices.postprocessor import MetadataReplacementPostProcessor
 from llama_index.storage.storage_context import StorageContext
 from llama_index.node_parser import SentenceWindowNodeParser
@@ -27,19 +33,6 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 llm = OpenAI(model="gpt-3.5-turbo")
 
 
-def generate_queries(query: str, num_queries: int = 3):
-   response = llm.predict(
-      REWRITE_QUERIES_TEMPLATE, num_queries=num_queries, query=query
-   )
-
-   queries = response.split("\n")
-   queries_str = "\n".join(queries)
-   print(f"Generated queries:\n{queries_str}")
-   print("="*100)
-
-   return queries
-
-
 class ChatEngine:
 
     def __init__(self, documents_path="./data/", new_indexing=False):
@@ -52,14 +45,34 @@ class ChatEngine:
             window_metadata_key="window",
             original_text_metadata_key="original_text",
         )
+        self.llm = OpenAI(model='gpt-3.5-turbo', temperature=0.7, max_tokens=256)
+        self.embed_model = OpenAIEmbedding()
+        self.prompt_helper = PromptHelper(
+                                context_window=4096,
+                                num_output=256,
+                                chunk_overlap_ratio=0.1,
+                                chunk_size_limit=None
+                            )
+        self.service_context = ServiceContext.from_defaults(
+                                llm=llm,
+                                embed_model=self.embed_model,
+                                node_parser=self.node_parser,
+                                prompt_helper=self.prompt_helper
+                            )
+
         self.documents = SimpleDirectoryReader(documents_path).load_data()
         self.sentence_nodes = self.node_parser.get_nodes_from_documents(self.documents)
         self.storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
-        self.index = VectorStoreIndex.from_vector_store(self.vector_store, storage_context=self.storage_context)
+        self.index = VectorStoreIndex.from_vector_store(
+            self.vector_store,
+            storage_context=self.storage_context,
+            service_context=self.service_context
+        )
         if new_indexing:
             self.index = VectorStoreIndex(
                 self.sentence_nodes,
                 storage_context=self.storage_context,
+                service_context=self.service_context,
             )
 
 
@@ -116,6 +129,19 @@ class ChatEngine:
 
         print(response)
         return response
+
+
+def generate_queries(query: str, num_queries: int = 3):
+   response = llm.predict(
+      REWRITE_QUERIES_TEMPLATE, num_queries=num_queries, query=query
+   )
+
+   queries = response.split("\n")
+   queries_str = "\n".join(queries)
+   print(f"Generated queries:\n{queries_str}")
+   print("="*100)
+   return queries
+
 
 
 # if __name__ == "__main__":
