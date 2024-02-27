@@ -37,9 +37,12 @@ class ChatEngine:
 
     def __init__(self, documents_path="./data/", new_indexing=False):
         self.vector_store = ElasticsearchStore(
-                                es_url="http://localhost:9200",
-                                index_name="law_index",
-                            )
+                                # es_url="http://localhost:9200",
+                                # index_name="law_index",
+                                index_name="law_bot",
+                                es_cloud_id="a360a60c18784a4288ef610006c3b861:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDAwZGM4M2JiYjU3NjRjZTliZDJlYjEyNTAwNTA2N2MxJDQzOTI5MzIyNGNlMjRiZDZhOTRkODYzOWQyZTNlYWJl",
+                                es_api_key="bUR1b3lZMEIzSUxOY1MxYjRvMEQ6ZE9PMS01UGlSSVdvdEhncUVkWmlWQQ=="
+        )
         self.node_parser = SentenceWindowNodeParser.from_defaults(
             window_size=3,
             window_metadata_key="window",
@@ -80,7 +83,7 @@ class ChatEngine:
 
         retriever = self.index.as_retriever(
             similarity_top_k=3,
-            # vector_store_query_mode="hybrid",
+            vector_store_query_mode="hybrid",
             alpha=0.5,
             text_qa_template = text_qa_template
         )

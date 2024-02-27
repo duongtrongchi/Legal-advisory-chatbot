@@ -12,6 +12,7 @@ from rest_framework import status
 from .chat_engine.chat import ChatEngine, generate_queries
 
 
+
 class ChatEngineView(APIView):
 
     def post(self, request ,format=None):

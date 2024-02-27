@@ -41,8 +41,9 @@ prompt_helper = PromptHelper(
 
 
 vector_store = ElasticsearchStore(
-    es_url="http://localhost:9200",
-    index_name="simple_rag",
+  index_name="law_bot",
+  es_cloud_id="a360a60c18784a4288ef610006c3b861:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDAwZGM4M2JiYjU3NjRjZTliZDJlYjEyNTAwNTA2N2MxJDQzOTI5MzIyNGNlMjRiZDZhOTRkODYzOWQyZTNlYWJl",
+  es_api_key="bUR1b3lZMEIzSUxOY1MxYjRvMEQ6ZE9PMS01UGlSSVdvdEhncUVkWmlWQQ=="
 )
 storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
@@ -53,13 +54,36 @@ service_context = ServiceContext.from_defaults(
   prompt_helper=prompt_helper
 )
 
-index = VectorStoreIndex.from_documents(
-    documents,
-    service_context=service_context,
-    storage_context=storage_context,
-)
+
+def indexing_simple_rag(flag=False, path="../../data/"):
+    index = None
+    if flag == True:
+        documents = SimpleDirectoryReader(path).load_data()
+        index = VectorStoreIndex.from_documents(
+          documents,
+          service_context=service_context,
+          storage_context=storage_context,
+        )
+        return index
+
+    index = VectorStoreIndex.from_vector_store(
+            vector_store,
+            storage_context=storage_context,
+            service_context=service_context
+    )
+    return index
 
 
-query_engine = index.as_query_engine(text_qa_template=base_prompt_template)
-response = query_engine.query("Cho tôi biết đại học Tôn Đức Thắng có bao nhiêu cơ sở chính và đó là cơ sở nào?")
-print(response)
+def genaration_qa(question, new_index=False, path="../../data/"):
+  if new_index == True:
+    index = indexing_simple_rag(flag=new_index, path=path)
+  else:
+     index = indexing_simple_rag(flag=False)
+  query_engine = index.as_query_engine(text_qa_template=base_prompt_template)
+  response = query_engine.query(question)
+  return response
+
+
+if __name__ == "__main__":
+   ques = genaration_qa(question="Bạn là ai?")
+   print(ques)
