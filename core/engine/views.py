@@ -24,18 +24,18 @@ class ChatEngineView(APIView):
         if question is None:
             return Response({'response': 'Không nhận được câu hỏi!!!'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # intent = json.loads(intent_classification(question))
-        # if intent['response'] == 1:
-        #     print("INTENT:")
-        #     print(intent)
-        #     return Response({'response': "Xin chào"}, status=status.HTTP_200_OK)
-        # else:
-        #     print("INTENT:")
-        #     print(intent)
-        queries = generate_queries(question)
-        response = ChatEngine()
-        response = response.chat_en(queries, question)
-        return Response({'response': response}, status=status.HTTP_200_OK)
+        intent = json.loads(intent_classification(question))
+        if intent['response'] == 1:
+            print("INTENT:")
+            print(intent)
+            return Response({'response': "Xin chào"}, status=status.HTTP_200_OK)
+        else:
+            print("INTENT:")
+            print(intent)
+            queries = generate_queries(question)
+            response = ChatEngine()
+            response = response.chat_en(queries, question)
+            return Response({'response': response}, status=status.HTTP_200_OK)
 
 
 def get_template(request):
