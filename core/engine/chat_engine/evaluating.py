@@ -7,6 +7,8 @@ load_dotenv()
 
 from datasets import Dataset
 
+import openai
+
 from ragas import evaluate
 from ragas.metrics import (
     answer_relevancy,
