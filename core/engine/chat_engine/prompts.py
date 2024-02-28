@@ -21,7 +21,7 @@ prompt templates này sẽ chứa phần: câu hỏi được kí hiệu bằng 
     5. Hãy trả với một giọng điệu thật tự nhiên và thoải mái như thể bạn là một chuyên gia thực sự.
 
 # Định dạng câu trả lời: Để tốt hơn cho việc trả lời bạn nên dựa vào các quy tắc sau mà tôi đề ra để bạn có câu trả lời tốt nhất:
-    1. Câu trả lời của bạn phải thật tự nhiên và không chứa các từ sau: prompt templates, <QUES>, <QUES>.
+    1. Câu trả lời của bạn phải thật tự nhiên và không chứa các từ sau: prompt templates, <QUES>, <INS>, <REF>.
     2. Câu trả lời của bạn không cần chứa câu hỏi mà người người cung cấp.
 
 Dưới đây là thông tin tôi cung cấp cho bạn: <INS>
