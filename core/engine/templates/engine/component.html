@@ -400,6 +400,13 @@
     var question_element = document.querySelector("#question-input");
     var question = document.querySelector("#question-input").value;
 
+    const loader =
+      document.querySelector(".conversation-message-list .loader") || null;
+    if (loader) {
+      flashMessage("danger", "Hệ thống đang trả lời, không thể gửi thêm câu hỏi")
+      return
+    }
+
     if (question != "") {
       // Xử lý thêm câu hỏi
       addToBox("user", question);
@@ -438,7 +445,7 @@
                             class="flex w-3 bg-gradient-to-t ${color[type]}"
                           ></div>
                           <div class="flex-1 p-3">
-                            <h1 class="md:text-xl text-gray-600">Success</h1>
+                            <h1 class="md:text-xl text-gray-600">Thông báo</h1>
                             <p class="text-gray-400 text-xs md:text-sm font-light">
                               ${content}
                             </p>
