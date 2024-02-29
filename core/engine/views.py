@@ -18,24 +18,35 @@ from .chat_engine.intent import intent_classification
 
 class ChatEngineView(APIView):
 
+    # def post(self, request ,format=None):
+    #     question = request.data.get('question', None)
+
+    #     if question is None:
+    #         return Response({'response': 'Không nhận được câu hỏi!!!'}, status=status.HTTP_400_BAD_REQUEST)
+
+    #     intent = json.loads(intent_classification(question))
+    #     if intent['response'] == 1:
+    #         print("INTENT:")
+    #         print(intent)
+    #         return Response({'response': "Xin chào"}, status=status.HTTP_200_OK)
+    #     else:
+    #         print("INTENT:")
+    #         print(intent)
+    #         queries = generate_queries(question)
+    #         response = ChatEngine()
+    #         response = response.chat_en(queries, question)
+    #         return Response({'response': response}, status=status.HTTP_200_OK)
     def post(self, request ,format=None):
         question = request.data.get('question', None)
 
         if question is None:
             return Response({'response': 'Không nhận được câu hỏi!!!'}, status=status.HTTP_400_BAD_REQUEST)
 
-        intent = json.loads(intent_classification(question))
-        if intent['response'] == 1:
-            print("INTENT:")
-            print(intent)
-            return Response({'response': "Xin chào"}, status=status.HTTP_200_OK)
-        else:
-            print("INTENT:")
-            print(intent)
-            queries = generate_queries(question)
-            response = ChatEngine()
-            response = response.chat_en(queries, question)
-            return Response({'response': response}, status=status.HTTP_200_OK)
+        queries = generate_queries(question)
+        response = ChatEngine()
+        response = response.chat_en(queries, question)
+
+        return Response({'response': response}, status=status.HTTP_200_OK)
 
 
 def get_template(request):
