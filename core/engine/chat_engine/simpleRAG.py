@@ -85,5 +85,12 @@ def genaration_qa(question, new_index=False, path="../../data/"):
 
 
 if __name__ == "__main__":
-   ques = genaration_qa(question="Bạn là ai?")
+   ques = genaration_qa(question="Các hành vi bị cấm trong hoạt động điện lực và sử dụng điện")
    print(ques)
+   
+  #  print("Reference:")
+  #  for i in ques.source_nodes:
+  #    print(i.score)
+  #    print(i.text)
+  #    print("="*100)
+     
