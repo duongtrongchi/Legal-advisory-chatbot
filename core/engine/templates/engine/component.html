@@ -86,7 +86,7 @@
                 class="h-full w-full"
               />
             </div>
-            <div class="text-sm font-semibold mt-2">Aminos Co.</div>
+            <div class="text-sm font-semibold mt-2">Adminator</div>
             <div class="text-xs text-gray-500">Lead UI/UX Designer</div>
             <div class="flex flex-row items-center mt-3">
               <div
@@ -198,7 +198,7 @@
               class="flex flex-col h-full overflow-x-auto mb-4 conversation-message-layout"
             >
               <div class="flex flex-col h-full conversation-message-container">
-                {% comment %} message list {% endcomment %}
+                {% comment %} message list ....................................{% endcomment %}
                 <div
                   class="grid grid-cols-12 gap-y-2 conversation-message-list"
                 >
@@ -328,7 +328,7 @@
       body: JSON.stringify(data),
     };
 
-    var answer;
+    var answer, references;
     await fetch(apiUrl, requestOptions)
       .then((response) => {
         if (!response.ok) {
@@ -339,19 +339,45 @@
       .then((data) => {
         console.log(data);
         console.log(data.response);
+        console.log(data.references);
         answer = data.response;
+        references = data.references;
       })
       .catch((error) => {
         console.error("Error:", error);
         answer = "Có lỗi trong quá trình xử lý!";
       });
 
-    return answer;
+    return {"answer": answer, "references": references};
   }
 
-  function addToBox(name, content) {
+  function addToBox(name, content, references) {
     var box = document.querySelector(".conversation-message-list");
     var loader = `<div class="loader"></div>`;
+
+    // Check references
+    let ref_element = ''
+    if(references) {
+      
+      for (let i = 0; i < references.length; i++) {
+        // Use template strings to concatenate the values
+        ref_element += `<button class="text-faq-dark-purple font-bold text-left pl-2 pb-5 pt-5 text-faq-body cursor-pointer flex justify-between w-full active:bg-faq-light-pink  accordion hover:text-faq-grayish-blue">
+                          ${`Tài liệu tham khảo ${i+1}`}
+                          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="31" fill="none" class="block plus" viewBox="0 0 30 31">
+                            <path fill="#AD28EB" d="M15 3.313A12.187 12.187 0 1 0 27.188 15.5 12.203 12.203 0 0 0 15 3.312Zm4.688 13.124h-3.75v3.75a.938.938 0 0 1-1.876 0v-3.75h-3.75a.938.938 0 0 1 0-1.875h3.75v-3.75a.938.938 0 0 1 1.876 0v3.75h3.75a.938.938 0 0 1 0 1.876Z"/>
+                          </svg>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="30" height="31" fill="none" class="hidden minus" viewBox="0 0 30 31">
+                            <path fill="#301534" d="M15 3.313A12.187 12.187 0 1 0 27.188 15.5 12.2 12.2 0 0 0 15 3.312Zm4.688 13.124h-9.375a.938.938 0 0 1 0-1.875h9.374a.938.938 0 0 1 0 1.876Z"/>
+                          </svg>
+                        </button>
+                        <div class="panel hidden">
+                          <p class=" overflow-hidden bg-faq-light-pink pl-4 pr-4 pb-4 pt-0  text-faq-grayish-blue"> 
+                            ${references[i].content}
+                          </p>
+                        </div>
+                        <hr class="bg-faq-grayish-blue">`
+      }
+    }
 
     if (name == "ai") {
       const loader =
@@ -359,7 +385,7 @@
       if (loader) {
         loader.remove();
       }
-
+      var myRandomId = generateRandomId(); 
       var element = `<div
                             class="col-start-1 col-end-8 p-3 rounded-lg conversation-message-box ai-box"
                           >
@@ -375,10 +401,16 @@
                                 <div>
                                   ${content}
                                 </div>
+                                <div>
+
+                                  ${references ? ref_element: ''}
+
+                                </div>
                               </div>
                             </div>
                           </div>`;
       box.innerHTML += element;
+      addReferenceEffect()
     } else {
       var element = `<div
                             class="col-start-6 col-end-13 p-3 rounded-lg conversation-message-box user-box"
@@ -417,14 +449,12 @@
     if (question != "") {
       // Xử lý thêm câu hỏi
       addToBox("user", question);
-      console.log(question);
       question_element.value = "";
 
       // Xử lý thêm trả lời
 
-      var answer = await getAnswer(question);
-      addToBox("ai", answer);
-      console.log(answer);
+      var {answer, references} = await getAnswer(question);
+      addToBox("ai", answer, references);
     }
   });
 
@@ -474,4 +504,46 @@
           flashMessage("warning", "Chức năng đang trong giai đoạn thử nghiệm")
       });
   });
+</script>
+
+{% comment %} Expander {% endcomment %}
+<script>
+function addReferenceEffect() {
+  var acc = document.querySelectorAll(".accordion");
+  var plusIcons = document.getElementsByClassName('plus');
+  var minusIcons = document.getElementsByClassName('minus');
+
+  for (let i = 0; i < acc.length; i++) {
+      acc[i].addEventListener("click", function () {
+          this.classList.toggle("active");
+
+          var panel = this.nextElementSibling;
+
+          if (panel.style.display === "block") {
+              panel.style.display = "none";
+          } else {
+              panel.style.display = "block";
+          }
+
+          // Toggle visibility for the corresponding plus and minus icons
+          plusIcons[i].style.display = (panel.style.display === "block") ? "none" : "block";
+          minusIcons[i].style.display = (panel.style.display === "block") ? "block" : "none";
+
+          // Hide all other panels and show their corresponding plus icons
+          for (let x = 0; x < acc.length; x++) {
+              if (x !== i) {
+                  acc[x].classList.remove("active");
+                  acc[x].nextElementSibling.style.display = "none";
+                  plusIcons[x].style.display = "block";
+                  minusIcons[x].style.display = "none";
+              }
+          }
+      });
+  }
+}
+
+function generateRandomId() {
+  const randomId = Math.random().toString(36).substr(2, 9);
+  return randomId;
+}
 </script>

@@ -23,6 +23,8 @@ from llama_index.llms import OpenAI
 
 from .prompts import REWRITE_QUERIES_TEMPLATE, text_qa_template
 
+import time
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
@@ -82,6 +84,8 @@ class ChatEngine:
 
     def chat_en(self, queries: list[str], query_origin):
 
+        start_time = time.time()
+        
         retriever = self.index.as_retriever(
             similarity_top_k=3,
             vector_store_query_mode="hybrid",
@@ -97,10 +101,15 @@ class ChatEngine:
 
         # Remove objects with the same content
         seen_ids = set()
-        retrieved_nodes = [obj for obj in retrieved_nodes if obj.get_content() not in seen_ids and not seen_ids.add(obj.get_content())]
+        retrieved_nodes = [obj for obj in retrieved_nodes if obj.get_score() > 0.5 and obj.get_content() not in seen_ids and not seen_ids.add(obj.get_content())]
         print(len(retrieved_nodes))
+        
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Retrieval time: {elapsed_time}")
 
         # Rerank
+        start_time = time.time()
         query_bundle = QueryBundle(query_origin)
 
 
@@ -113,6 +122,10 @@ class ChatEngine:
         retrieved_nodes = rerank.postprocess_nodes(
             retrieved_nodes, query_bundle
         )
+        
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Rerank time: {elapsed_time}")
 
         # Replace with sentence window node
         postprocessor = MetadataReplacementPostProcessor(
@@ -120,14 +133,23 @@ class ChatEngine:
         )
 
         window_nodes = postprocessor.postprocess_nodes(retrieved_nodes)
+        
+        # Get references
+        references = []
         for i in window_nodes:
             print('REFRENCES: \n')
             print(i.get_score())
             print(i.get_content())
             print('='*100)
+            refer = {
+                "score": i.get_score(),
+                "content": i.get_content()
+            }
+            references.append(refer)
 
 
         # Generate response with top_k result
+        start_time = time.time()
         context_str = "\n\n".join([r.get_content() for r in window_nodes])
 
         llm = OpenAI(model="gpt-3.5-turbo")
@@ -136,10 +158,15 @@ class ChatEngine:
         )
 
         print(response)
-        return response
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Generate response time: {elapsed_time}")
+        return response, references
 
 
 def generate_queries(query: str, num_queries: int = 3):
+    
+   start_time = time.time()
    response = llm.predict(
       REWRITE_QUERIES_TEMPLATE, num_queries=num_queries, query=query
    )
@@ -148,6 +175,10 @@ def generate_queries(query: str, num_queries: int = 3):
    queries_str = "\n".join(queries)
    print(f"Generated queries:\n{queries_str}")
    print("="*100)
+   
+   end_time = time.time()
+   elapsed_time = end_time - start_time
+   print(f"Query expansion time: {elapsed_time}")
    return queries
 
 
