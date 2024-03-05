@@ -20,6 +20,7 @@ from llama_index.vector_stores import ElasticsearchStore
 from llama_index.postprocessor import SentenceTransformerRerank
 from llama_index.schema import QueryBundle
 from llama_index.llms import OpenAI
+from llama_index.postprocessor import LLMRerank
 
 from .prompts import REWRITE_QUERIES_TEMPLATE, text_qa_template
 
@@ -112,17 +113,27 @@ class ChatEngine:
         start_time = time.time()
         query_bundle = QueryBundle(query_origin)
 
-
-        rerank = SentenceTransformerRerank(
-            top_n = 3,
-            model = "BAAI/bge-reranker-base"
+        # configure reranker
+        rerank = LLMRerank(
+            choice_batch_size=5,
+            top_n=3,
         )
-
-
+        
         retrieved_nodes = rerank.postprocess_nodes(
             retrieved_nodes, query_bundle
         )
-        retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
+        retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 5]
+
+        # rerank = SentenceTransformerRerank(
+        #     top_n = 3,
+        #     model = "BAAI/bge-reranker-base"
+        # )
+
+
+        # retrieved_nodes = rerank.postprocess_nodes(
+        #     retrieved_nodes, query_bundle
+        # )
+        # retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
         
         end_time = time.time()
         elapsed_time = end_time - start_time
