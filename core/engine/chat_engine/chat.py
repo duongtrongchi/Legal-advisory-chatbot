@@ -122,6 +122,7 @@ class ChatEngine:
         retrieved_nodes = rerank.postprocess_nodes(
             retrieved_nodes, query_bundle
         )
+        retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
         
         end_time = time.time()
         elapsed_time = end_time - start_time
@@ -164,7 +165,7 @@ class ChatEngine:
         return response, references
 
 
-def generate_queries(query: str, num_queries: int = 3):
+def generate_queries(query: str, num_queries: int = 2):
     
    start_time = time.time()
    response = llm.predict(
