@@ -1,0 +1,89 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    {% if page == 'register' %}
+    <div>
+      <div>
+        <div>
+          <a href="{% url 'user-login' %}">
+            <img src="{% static 'images/login.png' %}" alt="icon" />
+          </a>
+          <h3>Account SignUp</h3>
+          <p>Create a new developer account</p>
+        </div>
+
+        <form action="{% url 'user-login' %}" method="POST">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="form__field">
+              <label for="formInput#text">{{field.label}}</label>
+              {{field}}
+
+              {% if field.help_text %}
+                {{field.help_text}}
+              {% endif %}
+
+              {% for error in field.errors %}
+                <p style="color: red;">{{error}}</p>
+              {% endfor %}
+
+            </div>
+          {% endfor %}
+
+          <div>
+            <input class="btn btn--sub btn--lg" type="submit" value="Sign  In" />
+          </div>
+        </form>
+        <div>
+          <p>Already have an Account?</p>
+          <a href="{% url 'user-login' %}">Log In</a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+
+    {% if page == 'login' %}
+    <form action="{% url 'user-login' %}" method="POST">
+        {% csrf_token %}
+        <!-- Input:Email -->
+        <div>
+          <label for="formInput#text">Username: </label>
+          <input
+            class="input input--text"
+            id="formInput#text"
+            type="text"
+            name="username"
+            placeholder="Enter your username..."
+          />
+        </div>
+
+        <!-- Input:Password -->
+        <div>
+          <label for="formInput#password">Password: </label>
+          <input
+            class="input input--password"
+            id="formInput#passowrd"
+            type="password"
+            name="password"
+            placeholder="••••••••"
+          />
+        </div>
+        <div>
+          <input class="btn btn--sub btn--lg" type="submit" value="Log In" />
+          <a href="forgetpassword.html">Forget Password?</a>
+        </div>
+      </form>
+      {% endif %}
+
+</body>
+</html>
