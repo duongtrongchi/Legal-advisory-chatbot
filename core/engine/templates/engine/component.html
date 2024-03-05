@@ -86,8 +86,8 @@
                 class="h-full w-full"
               />
             </div>
-            <div class="text-sm font-semibold mt-2">Adminator</div>
-            <div class="text-xs text-gray-500">Lead UI/UX Designer</div>
+            <div class="text-sm font-semibold mt-2">Example User</div>
+            <div class="text-xs text-gray-500"></div>
             <div class="flex flex-row items-center mt-3">
               <div
                 class="flex flex-col justify-center h-4 w-8 bg-indigo-500 rounded-full"
@@ -358,7 +358,7 @@
     // Check references
     let ref_element = ''
     if(references) {
-      
+
       for (let i = 0; i < references.length; i++) {
         // Use template strings to concatenate the values
         ref_element += `<button class="text-faq-dark-purple font-bold text-left pl-2 pb-5 pt-5 text-faq-body cursor-pointer flex justify-between w-full active:bg-faq-light-pink  accordion hover:text-faq-grayish-blue">
@@ -371,7 +371,7 @@
                           </svg>
                         </button>
                         <div class="panel hidden">
-                          <p class=" overflow-hidden bg-faq-light-pink pl-4 pr-4 pb-4 pt-0  text-faq-grayish-blue"> 
+                          <p class=" overflow-hidden bg-faq-light-pink pl-4 pr-4 pb-4 pt-0  text-faq-grayish-blue">
                             ${references[i].content}
                           </p>
                         </div>
@@ -385,7 +385,7 @@
       if (loader) {
         loader.remove();
       }
-      var myRandomId = generateRandomId(); 
+      var myRandomId = generateRandomId();
       var element = `<div
                             class="col-start-1 col-end-8 p-3 rounded-lg conversation-message-box ai-box"
                           >
