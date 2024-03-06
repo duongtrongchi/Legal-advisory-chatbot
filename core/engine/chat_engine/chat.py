@@ -147,6 +147,7 @@ class ChatEngine:
         window_nodes = postprocessor.postprocess_nodes(retrieved_nodes)
         
         # Get references
+        start_time = time.time()
         references = []
         for i in window_nodes:
             print('REFRENCES: \n')
@@ -155,9 +156,13 @@ class ChatEngine:
             print('='*100)
             refer = {
                 "score": i.get_score(),
-                "content": i.get_content()
+                "content": i.get_content(),
+                "fileName": i.metadata['file_name']
             }
             references.append(refer)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Get reference time: {elapsed_time}")
 
 
         # Generate response with top_k result
