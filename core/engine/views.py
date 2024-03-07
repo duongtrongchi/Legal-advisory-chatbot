@@ -14,8 +14,9 @@ from rest_framework import status
 from .chat_engine.chat import ChatEngine, generate_queries
 # from .chat_engine.intent import intent_classification
 from .chat_engine.testIntent import intent_classification
+import time
 
-
+chatEngine = ChatEngine()
 
 class ChatEngineView(APIView):
 
@@ -34,13 +35,18 @@ class ChatEngineView(APIView):
         elif intent['response'] == "Chủ đề khác":
             return Response({'response': "Câu hỏi của bạn không hợp lệ, hoặc không liên quan đến Pháp Luật. Vui lòng kiểm tra lại và cung cấp thêm thông tin cho tôi"}, status=status.HTTP_200_OK)
         else:
-            queries = generate_queries(question)
-            response = ChatEngine()
-            response, references = response.chat_en(queries, question)
             
-            print("references:")
-            print(references)
-            print("="*100)
+            start_time = time.time()
+            queries = generate_queries(question)
+            end_rewrite_query_time = time.time()
+            elapsed_rewrite_time = end_rewrite_query_time - start_time
+            
+            response, references = chatEngine.chat_en(queries, question)
+            end_total_time = time.time()
+            elapsed_total_time = end_total_time - start_time
+            
+            print(f"Query expansion time: {elapsed_rewrite_time}")
+            print(f"Total time: {elapsed_total_time}")
             return Response({'response': response, 'references': references}, status=status.HTTP_200_OK)
     # def post(self, request ,format=None):
     #     question = request.data.get('question', None)

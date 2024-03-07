@@ -67,8 +67,6 @@ class ChatEngine:
                                 prompt_helper=self.prompt_helper
                             )
 
-        self.documents = SimpleDirectoryReader(documents_path).load_data()
-        self.sentence_nodes = self.node_parser.get_nodes_from_documents(self.documents)
         self.storage_context = StorageContext.from_defaults(vector_store=self.vector_store)
         self.index = VectorStoreIndex.from_vector_store(
             self.vector_store,
@@ -76,6 +74,8 @@ class ChatEngine:
             service_context=self.service_context
         )
         if new_indexing:
+            self.documents = SimpleDirectoryReader(documents_path).load_data()
+            self.sentence_nodes = self.node_parser.get_nodes_from_documents(self.documents)
             self.index = VectorStoreIndex(
                 self.sentence_nodes,
                 storage_context=self.storage_context,
@@ -106,8 +106,7 @@ class ChatEngine:
         print(len(retrieved_nodes))
         
         end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Retrieval time: {elapsed_time}")
+        elapsed_retrieval_time = end_time - start_time
 
         # Rerank
         start_time = time.time()
@@ -136,8 +135,7 @@ class ChatEngine:
         # retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
         
         end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Rerank time: {elapsed_time}")
+        elapsed_rerank_time = end_time - start_time
 
         # Replace with sentence window node
         postprocessor = MetadataReplacementPostProcessor(
@@ -147,7 +145,6 @@ class ChatEngine:
         window_nodes = postprocessor.postprocess_nodes(retrieved_nodes)
         
         # Get references
-        start_time = time.time()
         references = []
         for i in window_nodes:
             print('REFRENCES: \n')
@@ -160,9 +157,6 @@ class ChatEngine:
                 "fileName": i.metadata['file_name']
             }
             references.append(refer)
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Get reference time: {elapsed_time}")
 
 
         # Generate response with top_k result
@@ -176,14 +170,16 @@ class ChatEngine:
 
         print(response)
         end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Generate response time: {elapsed_time}")
+        elapsed_generate_time = end_time - start_time
+        
+        print(f"Retrieval time: {elapsed_retrieval_time}")
+        print(f"Rerank time: {elapsed_rerank_time}")
+        print(f"Generate response time: {elapsed_generate_time}")
         return response, references
 
 
 def generate_queries(query: str, num_queries: int = 2):
     
-   start_time = time.time()
    response = llm.predict(
       REWRITE_QUERIES_TEMPLATE, num_queries=num_queries, query=query
    )
@@ -193,9 +189,6 @@ def generate_queries(query: str, num_queries: int = 2):
    print(f"Generated queries:\n{queries_str}")
    print("="*100)
    
-   end_time = time.time()
-   elapsed_time = end_time - start_time
-   print(f"Query expansion time: {elapsed_time}")
    return queries
 
 
