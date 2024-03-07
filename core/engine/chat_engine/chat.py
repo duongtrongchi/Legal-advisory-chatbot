@@ -73,6 +73,10 @@ class ChatEngine:
             storage_context=self.storage_context,
             service_context=self.service_context
         )
+        self.rerank = SentenceTransformerRerank(
+            top_n = 3,
+            model = "BAAI/bge-reranker-base"
+        )
         if new_indexing:
             self.documents = SimpleDirectoryReader(documents_path).load_data()
             self.sentence_nodes = self.node_parser.get_nodes_from_documents(self.documents)
@@ -112,27 +116,21 @@ class ChatEngine:
         start_time = time.time()
         query_bundle = QueryBundle(query_origin)
 
-        # configure reranker
-        rerank = LLMRerank(
-            choice_batch_size=5,
-            top_n=3,
-        )
-        
-        retrieved_nodes = rerank.postprocess_nodes(
-            retrieved_nodes, query_bundle
-        )
-        retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 5]
-
-        # rerank = SentenceTransformerRerank(
-        #     top_n = 3,
-        #     model = "BAAI/bge-reranker-base"
+        # # configure reranker
+        # rerank = LLMRerank(
+        #     choice_batch_size=5,
+        #     top_n=3,
         # )
-
-
+        
         # retrieved_nodes = rerank.postprocess_nodes(
         #     retrieved_nodes, query_bundle
         # )
-        # retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
+        # retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 5]
+
+        retrieved_nodes = self.rerank.postprocess_nodes(
+            retrieved_nodes, query_bundle
+        )
+        retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
         
         end_time = time.time()
         elapsed_rerank_time = end_time - start_time
