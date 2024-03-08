@@ -58,6 +58,14 @@
     .accordion.active {
       color: darkturquoise;
     }
+    .conversation-title {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      margin-left: 16px;
+      width: 150px;
+      overflow: hidden;
+      text-align: left;
+    }
   </style>
   <body
     class="h-screen overflow-hidden flex items-center justify-center"
@@ -110,97 +118,53 @@
               <div class="leading-none ml-1 text-xs">Active</div>
             </div>
           </div>
-          {% comment %} history chat {% endcomment %} {% comment %}
-          <div class="flex flex-col mt-8">
-            <div class="flex flex-row items-center justify-between text-xs">
-              <span class="font-bold">Active Conversations</span>
+          {% comment %} history chat {% endcomment %}
+          <div class="flex flex-col mt-2 history-layout">
+            {% comment %} new chat {% endcomment %}
+            <div class="flex flex-col space-y-1 mt-2 -mx-2 mb-2">
+              <button
+                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
+                onclick="resetChat()"
+              >
+              <div
+                class="flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full"
+              >
+                <i class="fa-solid fa-plus"></i>
+              </div>
+                <div class="ml-2 text-sm font-semibold">New chat</div>
+              </button>
+            </div>
+
+            <div
+              class="flex flex-row items-center justify-between text-xs history-title"
+            >
+              <span class="font-bold">Recent</span>
               <span
-                class="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full"
+                class="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full conversations-size"
                 >4</span
               >
             </div>
+
+            {% comment %} conversations {% endcomment %}
             <div
-              class="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto"
+              class="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto conversation-list"
             >
-              <button
-                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-              >
-                <div
-                  class="flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full"
-                >
-                  H
-                </div>
-                <div class="ml-2 text-sm font-semibold">Henry Boyd</div>
-              </button>
+              {% comment %}
               <button
                 class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
               >
                 <div
                   class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
                 >
-                  M
+                  <i class="fa-solid fa-message"></i>
                 </div>
-                <div class="ml-2 text-sm font-semibold">Marta Curtis</div>
-                <div
-                  class="flex items-center justify-center ml-auto text-xs text-white bg-red-500 h-4 w-4 rounded leading-none"
-                >
-                  2
+                <div class="ml-2 text-sm font-semibold conversation-title">
+                  Quy định về thương mại ở nông thôn
                 </div>
               </button>
-              <button
-                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-              >
-                <div
-                  class="flex items-center justify-center h-8 w-8 bg-orange-200 rounded-full"
-                >
-                  P
-                </div>
-                <div class="ml-2 text-sm font-semibold">Philip Tucker</div>
-              </button>
-              <button
-                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-              >
-                <div
-                  class="flex items-center justify-center h-8 w-8 bg-pink-200 rounded-full"
-                >
-                  C
-                </div>
-                <div class="ml-2 text-sm font-semibold">Christine Reid</div>
-              </button>
-              <button
-                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-              >
-                <div
-                  class="flex items-center justify-center h-8 w-8 bg-purple-200 rounded-full"
-                >
-                  J
-                </div>
-                <div class="ml-2 text-sm font-semibold">Jerry Guzman</div>
-              </button>
-            </div>
-            <div
-              class="flex flex-row items-center justify-between text-xs mt-6"
-            >
-              <span class="font-bold">Archivied</span>
-              <span
-                class="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full"
-                >7</span
-              >
-            </div>
-            <div class="flex flex-col space-y-1 mt-4 -mx-2">
-              <button
-                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-              >
-                <div
-                  class="flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full"
-                >
-                  H
-                </div>
-                <div class="ml-2 text-sm font-semibold">Henry Boyd</div>
-              </button>
+              {% endcomment %}
             </div>
           </div>
-          {% endcomment %}
         </div>
         {% comment %} Conversation Layout {% endcomment %}
         <div class="flex flex-col flex-auto h-full p-6 conversation-layout">
@@ -320,12 +284,12 @@
 
     {% comment %} flash message {% endcomment %}
     <div class="absolute mt-4 mr-6 right-0 top-0 flash-message"></div>
+    <input type="hidden" id="converid" />
   </body>
 </html>
 
 <script>
   const quesButton = document.querySelector(".send-btn");
-
 
   async function getAnswer(question) {
     // Define the API URL
@@ -362,7 +326,7 @@
         answer = "Có lỗi trong quá trình xử lý!";
       });
 
-    return {"answer": answer, "references": references};
+    return { answer: answer, references: references };
   }
 
   function addToBox(name, content, references) {
@@ -370,14 +334,13 @@
     var loader = `<div class="loader"></div>`;
 
     // Check references
-    let ref_element = ''
-    if(references) {
-
+    let ref_element = "";
+    if (references) {
       for (let i = 0; i < references.length; i++) {
-        file_name = references[i].fileName ? references[i].fileName : ''
+        file_name = references[i].fileName ? references[i].fileName : "";
         // Use template strings to concatenate the values
         ref_element += `<button class="text-faq-dark-purple font-bold text-left pl-2 pb-5 pt-5 text-faq-body cursor-pointer flex justify-between w-full active:bg-faq-light-pink  accordion hover:text-faq-grayish-blue">
-                          ${`Tài liệu tham khảo ${i+1}`}
+                          ${`Tài liệu tham khảo ${i + 1}`}
                           <img
                               class="h-5 w-5 text-slate-800 block plus"
                               src="{% static 'images/add.png' %}"
@@ -388,12 +351,16 @@
                           />
                         </button>
                         <div class="panel hidden">
-                          <a target="_blank" href="{% static 'documents/'%}${file_name}" class="inline-block px-4 pb-4">${file_name?'Nguồn: ':''}<span class="text-blue-500 hover:text-red-600">${file_name?file_name:''}</span></a>
+                          <a target="_blank" href="{% static 'documents/'%}${file_name}" class="inline-block px-4 pb-4">${
+          file_name ? "Nguồn: " : ""
+        }<span class="text-blue-500 hover:text-red-600">${
+          file_name ? file_name : ""
+        }</span></a>
                           <p class=" overflow-hidden bg-faq-light-pink pl-4 pr-4 pb-4 pt-0  text-faq-grayish-blue">
                             ${references[i].content}
                           </p>
                         </div>
-                        <hr class="bg-faq-grayish-blue">`
+                        <hr class="bg-faq-grayish-blue">`;
       }
     }
 
@@ -421,14 +388,14 @@
                                 </div>
                                 <div>
 
-                                  ${references ? ref_element: ''}
+                                  ${references ? ref_element : ""}
 
                                 </div>
                               </div>
                             </div>
                           </div>`;
       box.innerHTML += element;
-      addReferenceEffect()
+      addReferenceEffect();
     } else {
       var element = `<div
                             class="col-start-6 col-end-13 p-3 rounded-lg conversation-message-box user-box"
@@ -451,7 +418,7 @@
       box.innerHTML += element;
       box.innerHTML += loader;
     }
-    scrollToBottom()
+    scrollToBottom();
   }
 
   quesButton.addEventListener("click", async function () {
@@ -461,8 +428,11 @@
     const loader =
       document.querySelector(".conversation-message-list .loader") || null;
     if (loader) {
-      flashMessage("danger", "Hệ thống đang trả lời, không thể gửi thêm câu hỏi")
-      return
+      flashMessage(
+        "danger",
+        "Hệ thống đang trả lời, không thể gửi thêm câu hỏi"
+      );
+      return;
     }
 
     if (question != "") {
@@ -471,9 +441,12 @@
       question_element.value = "";
 
       // Xử lý thêm trả lời
-
-      var {answer, references} = await getAnswer(question);
+      var { answer, references } = await getAnswer(question);
       addToBox("ai", answer, references);
+
+      // Save chat
+      addNewConver(question);
+      saveChat(question, answer, references);
     }
   });
 
@@ -487,19 +460,23 @@
   });
 
   function scrollToBottom() {
-    var layout = document.getElementsByClassName('conversation-message-layout')[0]
-    var message_frame = document.getElementsByClassName('conversation-message-list')[0]
-    layout.scrollTop = message_frame.offsetHeight
+    var layout = document.getElementsByClassName(
+      "conversation-message-layout"
+    )[0];
+    var message_frame = document.getElementsByClassName(
+      "conversation-message-list"
+    )[0];
+    layout.scrollTop = message_frame.offsetHeight;
   }
 
   function flashMessage(type, content) {
     var color = {
-      "success": "from-green-500 to-green-400",
-      "danger": "from-red-500 to-red-400",
-      "warning": "from-yellow-500 to-yellow-300"
-    }
+      success: "from-green-500 to-green-400",
+      danger: "from-red-500 to-red-400",
+      warning: "from-yellow-500 to-yellow-300",
+    };
 
-    var result = document.createElement('div');
+    var result = document.createElement("div");
     result.innerHTML = `<div
                           class="flex bg-white flex-row shadow-md border border-gray-100 rounded-lg overflow-hidden mt-2"
                         >
@@ -513,20 +490,20 @@
                             </p>
                           </div>
 
-                        </div>`
+                        </div>`;
 
-    document.querySelector('.flash-message').appendChild(result);
+    document.querySelector(".flash-message").appendChild(result);
     setTimeout(() => {
-      result.remove()
+      result.remove();
     }, 3000);
   }
 
   var elementsArray = document.querySelectorAll(".beta");
-  elementsArray.forEach(function(elem) {
-      elem.addEventListener("click", function() {
-          console.log("beta")
-          flashMessage("warning", "Chức năng đang trong giai đoạn thử nghiệm")
-      });
+  elementsArray.forEach(function (elem) {
+    elem.addEventListener("click", function () {
+      console.log("beta");
+      flashMessage("warning", "Chức năng đang trong giai đoạn thử nghiệm");
+    });
   });
 </script>
 
@@ -563,4 +540,147 @@
     const randomId = Math.random().toString(36).substr(2, 9);
     return randomId;
   }
+</script>
+
+{% comment %} Load history conversation {% endcomment %}
+<script>
+  var conversation_layout = document.querySelector('.conversation-message-list')
+  var conversations = JSON.parse(localStorage.getItem("conversations")) || []
+  var currentConver = document.getElementById("converid")
+  var layout_history = document.querySelector(".conversation-list")
+  var size = document.querySelector(".conversations-size")
+  var conversations_detail = JSON.parse(localStorage.getItem("conversations_detail")) || []
+
+  loadHistory()
+
+  function loadHistory() {
+
+    var html = ""
+    conversations.slice().reverse().forEach(conver =>{
+      html += `<button
+                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
+                onclick="loadChat('${conver.id}')"
+              >
+                <div
+                  class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+                >
+                  <i class="fa-solid fa-message"></i>
+                </div>
+                <div class="ml-2 text-sm font-semibold conversation-title">${conver.title}</div>
+              </button>`
+    })
+
+    layout_history.innerHTML += html
+    size.innerText = conversations.length
+  }
+
+  function loadChat(id_conver="1") {
+
+    console.log(id_conver)
+    currentConver.innerText = id_conver
+    conversation_layout.innerHTML = ""
+    addToBox("ai", "Xin chào tôi là trợ lý ảo có thể trả lời các câu hỏi về nội dung trong văn bản luật. Bạn cần tôi giúp gì nào?")
+
+    var filteredConversations = conversations_detail.filter(function(conversation) {
+      return conversation.id === id_conver;
+    });
+
+    filteredConversations.forEach(chat =>{
+      addToBox("user", chat['question'])
+      addToBox("ai", chat['answer'], chat['references'])
+    })
+
+  }
+
+  function saveChat(question, answer, ref) {
+
+    var newChat = {
+      "id": currentConver.innerText,
+      "question": question,
+      "answer": answer,
+      "references": ref
+    }
+    conversations_detail.push(newChat)
+    localStorage.setItem("conversations_detail", JSON.stringify(conversations_detail))
+  }
+
+  function addNewConver(question) {
+    if (currentConver.innerText == "") {
+      currentConver.innerText = generateRandomId()
+      var newButton = `<button
+                        class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
+                        onclick="loadChat('${currentConver.innerText}')"
+                      >
+                        <div
+                          class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+                        >
+                          <i class="fa-solid fa-message"></i>
+                        </div>
+                        <div class="ml-2 text-sm font-semibold conversation-title">${question}</div>
+                      </button>`
+      layout_history.innerHTML = newButton + layout_history.innerHTML;
+
+      conversations.push({
+        "id": currentConver.innerText,
+        "title": question
+      })
+      size.innerText = conversations.length
+      localStorage.setItem("conversations", JSON.stringify(conversations))
+    }
+  }
+
+  function resetChat() {
+    currentConver.innerText = ""
+    conversation_layout.innerHTML = ""
+    addToBox("ai", "Xin chào tôi là trợ lý ảo có thể trả lời các câu hỏi về nội dung trong văn bản luật. Bạn cần tôi giúp gì nào?")
+  }
+
+
+  {% comment %} var conversations = [
+    {
+      "id": "1",
+      "title": "Xin chào"
+    },
+    {
+      "id": "2",
+      "title": "Xin lỗi"
+    }
+  ]
+
+  {% comment %} var conversations_detail = [
+    {
+      "id": "1",
+      "question": "Bạn là ai?",
+      "answer": "Tôi là trợ lý ảo chuyên trả lời các câu hỏi về pháp luật",
+      "references": [
+        {
+          "score": 9,
+          "content": "ahihi",
+          "fileName": "luat-thuong-mai.pdf"
+        },
+        {
+          "score": 8,
+          "content": "ahuhu",
+          "fileName": "luat-thuong-mai.pdf"
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "question": "Xin chào",
+      "answer": "Tôi là trợ lý ảo chuyên trả lời các câu hỏi về pháp luật",
+      "references": [
+        {
+          "score": 9,
+          "content": "ahihi",
+          "fileName": "luat-thuong-mai.pdf"
+        },
+        {
+          "score": 7,
+          "content": "ahuhu",
+          "fileName": "luat-thuong-mai.pdf"
+        }
+      ]
+    },
+  ] {% endcomment %}
 </script>
