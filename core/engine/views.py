@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
+from django.views.decorators.csrf import csrf_exempt
 
 from .chat_engine.chat import ChatEngine, generate_queries
 # from .chat_engine.intent import intent_classification
@@ -21,6 +21,7 @@ chatEngine = ChatEngine()
 
 class ChatEngineView(APIView):
 
+    @csrf_exempt
     def post(self, request ,format=None):
         question = request.data.get('question', None)
 
