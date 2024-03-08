@@ -579,7 +579,7 @@
     console.log(id_conver)
     currentConver.innerText = id_conver
     conversation_layout.innerHTML = ""
-    addToBox("ai", "Xin chào tôi là trợ lý ảo có thể trả lời các câu hỏi về nội dung trong văn bản luật. Bạn cần tôi giúp gì nào?")
+    addToBox("ai", "Xin chào tôi là law chat - trợ lý ảo có thể giúp bạn giải đáp các câu hỏi liên quan đến pháp luật, các thông tin được trích xuất từ văn bản luật. Bạn cần tôi giúp gì nào?")
 
     var filteredConversations = conversations_detail.filter(function(conversation) {
       return conversation.id === id_conver;
@@ -632,7 +632,7 @@
   function resetChat() {
     currentConver.innerText = ""
     conversation_layout.innerHTML = ""
-    addToBox("ai", "Xin chào tôi là trợ lý ảo có thể trả lời các câu hỏi về nội dung trong văn bản luật. Bạn cần tôi giúp gì nào?")
+    addToBox("ai", "Xin chào tôi là law chat - trợ lý ảo có thể giúp bạn giải đáp các câu hỏi liên quan đến pháp luật, các thông tin được trích xuất từ văn bản luật. Bạn cần tôi giúp gì nào?")
   }
 
 
