@@ -10,6 +10,8 @@
 </head>
 <body>
 
+  {{user}}
+
 
     {% if page == 'register' %}
     <div>
@@ -22,7 +24,7 @@
           <p>Create a new developer account</p>
         </div>
 
-        <form action="{% url 'user-login' %}" method="POST">
+        <form action="{% url 'register-page' %}" method="POST">
           {% csrf_token %}
           {% for field in form %}
             <div class="form__field">
