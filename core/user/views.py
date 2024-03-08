@@ -24,12 +24,12 @@ def login_user(request):
             messages.error(request,'Tài khoản không tồn tại!')
 
         user = authenticate(request, username=username, password=password)
-        # if user is not None:
-        #     login(request, user)
-        #     messages.success(request, 'Đăng nhập thành công!')
-        #     return render(request, 'users/login_register.html', {'page': page})
-        # else:
-        #     messages.error(request, 'Username or password không chính xác!')
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'Đăng nhập thành công!')
+            return render(request, 'users/login_register.html', {'page': page})
+        else:
+            messages.error(request, 'Username or password không chính xác!')
 
     return render(request, 'users/login_register.html', {'page': page, 'user': user})
 
