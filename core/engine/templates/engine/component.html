@@ -62,7 +62,7 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       margin-left: 16px;
-      width: 150px;
+      width: 120px;
       overflow: hidden;
       text-align: left;
     }
@@ -110,7 +110,9 @@
             <div class="text-sm font-semibold mt-2">Example User</div>
             <div class="text-xs text-gray-500"></div>
             <div class="flex flex-row items-center mt-3">
-              <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded">
+              <button
+                class="logout-btn bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded"
+              >
                 Đăng xuất
               </button>
             </div>
@@ -146,20 +148,23 @@
             <div
               class="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto conversation-list"
             >
-              
-              <button
-                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-              >
-                <div
-                  class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+              {% comment %} <div class="flex flex-row items-center">
+                <button
+                  class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
                 >
-                  <i class="fa-solid fa-message"></i>
-                </div>
-                <div class="ml-2 text-sm font-semibold conversation-title">
-                  Quy định về thương mại ở nông thôn
-                </div>
-              </button>
-              
+                  <div
+                    class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+                  >
+                    <i class="fa-solid fa-message"></i>
+                  </div>
+                  <div class="ml-2 text-sm font-semibold conversation-title">
+                    Quy định về thương mại ở nông thôn
+                  </div>
+                </button>
+                <button class="ml-2 text-sm font-semibold text-red">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div> {% endcomment %}
             </div>
           </div>
         </div>
@@ -285,6 +290,11 @@
     <input type="hidden" id="converid" />
   </body>
 </html>
+
+<script
+  src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
+  defer
+></script>
 
 <script>
   const quesButton = document.querySelector(".send-btn");
@@ -555,17 +565,27 @@
 
     var html = ""
     conversations.slice().reverse().forEach(conver =>{
-      html += `<button
-                class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-                onclick="loadChat('${conver.id}')"
-              >
-                <div
-                  class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+      html += `<div class="flex flex-row items-center">
+                <button
+                  class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
+                  onclick="loadChat('${conver.id}')"
                 >
-                  <i class="fa-solid fa-message"></i>
-                </div>
-                <div class="ml-2 text-sm font-semibold conversation-title">${conver.title}</div>
-              </button>`
+                  <div
+                    class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+                  >
+                    <i class="fa-solid fa-message"></i>
+                  </div>
+                  <div class="ml-2 text-sm font-semibold conversation-title">
+                    ${conver.title}
+                  </div>
+                </button>
+                <button 
+                  class="ml-2 text-sm font-semibold text-red"
+                  onclick="removeChat(this, '${conver.id}')"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>`
     })
 
     layout_history.innerHTML += html
@@ -627,6 +647,12 @@
     }
   }
 
+  function removeChat(event, id) {
+    console.log(event.parentElement)
+    event.parentElement.remove()
+    console.log(id)
+  }
+
   function resetChat() {
     currentConver.innerText = ""
     conversation_layout.innerHTML = ""
@@ -681,4 +707,14 @@
       ]
     },
   ] {% endcomment %}
+</script>
+
+<script>
+  var logoutbtn = document.querySelector(".logout-btn");
+  logoutbtn.addEventListener("click", function () {
+    flashMessage(
+      "success",
+      "Đăng xuất thành công, đang trở về trang đăng nhập!"
+    );
+  });
 </script>
