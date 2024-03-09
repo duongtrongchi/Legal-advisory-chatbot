@@ -110,9 +110,9 @@
             <div class="text-sm font-semibold mt-2">Example User</div>
             <div class="text-xs text-gray-500"></div>
             <div class="flex flex-row items-center mt-3">
-              <button class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded">
+              <a href="{% url 'logout-page' %}" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded">
                 Đăng xuất
-              </button>
+              </a>
             </div>
           </div>
           {% comment %} history chat {% endcomment %}
@@ -146,7 +146,7 @@
             <div
               class="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto conversation-list"
             >
-              
+
               <button
                 class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
               >
@@ -159,7 +159,7 @@
                   Quy định về thương mại ở nông thôn
                 </div>
               </button>
-              
+
             </div>
           </div>
         </div>
