@@ -110,7 +110,10 @@
             <div class="text-sm font-semibold mt-2">Example User</div>
             <div class="text-xs text-gray-500"></div>
             <div class="flex flex-row items-center mt-3">
-              <a href="{% url 'logout-page' %}" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded">
+              <a
+                href="{% url 'logout-page' %}"
+                class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded"
+              >
                 Đăng xuất
               </a>
             </div>
@@ -146,7 +149,8 @@
             <div
               class="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto conversation-list"
             >
-              {% comment %} <div class="flex flex-row items-center">
+              {% comment %}
+              <div class="flex flex-row items-center">
                 <button
                   class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
                 >
@@ -162,7 +166,8 @@
                 <button class="ml-2 text-sm font-semibold text-red">
                   <i class="fa-solid fa-xmark"></i>
                 </button>
-              </div> {% endcomment %}
+              </div>
+              {% endcomment %}
             </div>
           </div>
         </div>
@@ -289,32 +294,27 @@
   </body>
 </html>
 
-<script
-  src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js"
-  defer
-></script>
-
 <script>
   const quesButton = document.querySelector(".send-btn");
 
   function getCookie(name) {
     let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
         }
+      }
     }
     return cookieValue;
   }
 
-  const csrftoken = getCookie('csrftoken');
-  console.log(csrftoken)
+  const csrftoken = getCookie("csrftoken");
+  console.log(csrftoken);
 
   async function getAnswer(question) {
     // Define the API URL
@@ -327,7 +327,7 @@
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        'X-CSRFToken': csrftoken
+        "X-CSRFToken": csrftoken,
       },
       body: JSON.stringify(data),
     };
@@ -597,11 +597,11 @@
                     ${conver.title}
                   </div>
                 </button>
-                <button 
-                  class="ml-2 text-sm font-semibold text-red"
+                <button
+                  class="ml-2 text-sm font-semibold text-red hover:bg-red-400 px-1 rounded-full"
                   onclick="removeChat(this, '${conver.id}')"
                 >
-                  <i class="fa-solid fa-xmark"></i>
+                  <i class="fa-solid fa-xmark text-red-600"></i>
                 </button>
               </div>`
     })
@@ -643,17 +643,28 @@
   function addNewConver(question) {
     if (currentConver.innerText == "") {
       currentConver.innerText = generateRandomId()
-      var newButton = `<button
-                        class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
-                        onclick="loadChat('${currentConver.innerText}')"
-                      >
-                        <div
-                          class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+      var newButton = `<div class="flex flex-row items-center">
+                        <button
+                          class="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2"
+                          onclick="loadChat('${currentConver.innerText}')"
                         >
-                          <i class="fa-solid fa-message"></i>
-                        </div>
-                        <div class="ml-2 text-sm font-semibold conversation-title">${question}</div>
-                      </button>`
+                          <div
+                            class="flex items-center justify-center h-8 w-8 bg-gray-200 rounded-full"
+                          >
+                            <i class="fa-solid fa-message"></i>
+                          </div>
+                          <div class="ml-2 text-sm font-semibold conversation-title">
+                            ${question}
+                          </div>
+                        </button>
+                        <button
+                          class="ml-2 text-sm font-semibold text-red hover:bg-red-400 px-1 rounded-full"
+                          onclick="removeChat(this, '${currentConver.innerText}')"
+                        >
+                          <i class="fa-solid fa-xmark text-red-600"></i>
+                        </button>
+                      </div>`
+
       layout_history.innerHTML = newButton + layout_history.innerHTML;
 
       conversations.push({
@@ -667,8 +678,29 @@
 
   function removeChat(event, id) {
     console.log(event.parentElement)
-    event.parentElement.remove()
     console.log(id)
+    event.parentElement.remove()
+
+    conversations = conversations.filter(function(conversation) {
+      return conversation.id != id;
+    })
+
+    conversations_detail = conversations_detail.filter(function(conversation) {
+      return conversation.id != id;
+    });
+
+    size.innerText = conversations.length
+    localStorage.setItem("conversations", JSON.stringify(conversations))
+    localStorage.setItem("conversations_detail", JSON.stringify(conversations_detail))
+
+    flashMessage(
+      "success",
+      "Bạn vừa xóa lịch sử hội thoại thành công!"
+    );
+
+    if(currentConver.innerText == id) {
+      resetChat()
+    }
   }
 
   function resetChat() {
@@ -727,7 +759,8 @@
   ] {% endcomment %}
 </script>
 
-{% comment %} <script>
+{% comment %}
+<script>
   var logoutbtn = document.querySelector(".logout-btn");
   logoutbtn.addEventListener("click", function () {
     flashMessage(
@@ -735,4 +768,5 @@
       "Đăng xuất thành công, đang trở về trang đăng nhập!"
     );
   });
-</script> {% endcomment %}
+</script>
+{% endcomment %}
