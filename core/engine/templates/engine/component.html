@@ -71,7 +71,7 @@
     class="h-screen overflow-hidden flex items-center justify-center"
     style="background: #edf2f7"
   >
-    <div class="flex h-screen antialiased text-gray-800">
+    <div class="flex h-screen antialiased text-gray-800 w-full">
       <div class="flex flex-row h-full w-full overflow-x-hidden">
         <div
           class="flex flex-col py-8 pl-6 pr-2 w-64 bg-white flex-shrink-0 sidebar-layout"
@@ -185,6 +185,7 @@
                 <div
                   class="grid grid-cols-12 gap-y-2 conversation-message-list"
                 >
+                  {% comment %}
                   <div
                     class="col-start-1 col-end-8 p-3 rounded-lg conversation-message-box ai-box"
                   >
@@ -206,6 +207,7 @@
                       </div>
                     </div>
                   </div>
+                  {% endcomment %}
                 </div>
               </div>
             </div>
@@ -295,6 +297,12 @@
 </html>
 
 <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    resetChat();
+    {% for message in messages %}
+      flashMessage('{{message.tags}}', '{{message}}')
+    {% endfor%}
+  });
   const quesButton = document.querySelector(".send-btn");
 
   function getCookie(name) {
@@ -706,7 +714,39 @@
   function resetChat() {
     currentConver.innerText = ""
     conversation_layout.innerHTML = ""
-    addToBox("ai", "Xin chào tôi là law chat - trợ lý ảo có thể giúp bạn giải đáp các câu hỏi liên quan đến pháp luật, các thông tin được trích xuất từ văn bản luật. Bạn cần tôi giúp gì nào?")
+    var content = "Xin chào tôi là law chat - trợ lý ảo có thể giúp bạn giải đáp các câu hỏi liên quan đến pháp luật, các thông tin được trích xuất từ văn bản luật. Bạn cần tôi giúp gì nào?"
+    var element = `<div
+                      class="col-start-1 col-end-8 p-3 rounded-lg conversation-message-box ai-box"
+                    >
+                      <div class="flex flex-row">
+                        <div
+                          class="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0"
+                        >
+                          <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div
+                          class="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl"
+                        >
+                          <div class="stream-content">
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+    conversation_layout.innerHTML += element
+
+    appendContent(0, content);
+
+  }
+
+  function appendContent(index, content) {
+    var streamIndex = document.querySelector(".stream-content")
+    if (index < content.split("").length) {
+        streamIndex.innerHTML += content[index];
+        setTimeout(function () {
+            appendContent(index + 1, content);
+        }, 20); // Adjust the delay in milliseconds as needed (0.1 seconds in this case)
+    }
   }
 
 
