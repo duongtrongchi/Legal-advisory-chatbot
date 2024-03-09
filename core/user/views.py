@@ -27,7 +27,6 @@ def login_user(request):
         if user is not None:
             login(request, user)
             messages.success(request, 'Đăng nhập thành công!')
-            # return render(request, 'users/login_register.html', {'page': page})
             return redirect('font-end-template')
         else:
             messages.error(request, 'Username or password không chính xác!')
