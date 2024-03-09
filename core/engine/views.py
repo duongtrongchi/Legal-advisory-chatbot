@@ -20,8 +20,7 @@ chatEngine = ChatEngine()
 
 
 class ChatEngineView(APIView):
-
-    @csrf_exempt
+    
     def post(self, request ,format=None):
         question = request.data.get('question', None)
 

@@ -110,11 +110,9 @@
             <div class="text-sm font-semibold mt-2">Example User</div>
             <div class="text-xs text-gray-500"></div>
             <div class="flex flex-row items-center mt-3">
-              <button
-                class="logout-btn bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded"
-              >
+              <a href="{% url 'logout-page' %}" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 rounded-full border border-blue-500 hover:border-transparent rounded">
                 Đăng xuất
-              </button>
+              </a>
             </div>
           </div>
           {% comment %} history chat {% endcomment %}
@@ -299,6 +297,25 @@
 <script>
   const quesButton = document.querySelector(".send-btn");
 
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+  }
+
+  const csrftoken = getCookie('csrftoken');
+  console.log(csrftoken)
+
   async function getAnswer(question) {
     // Define the API URL
     const apiUrl = "http://127.0.0.1:8000/engine/chat/";
@@ -310,6 +327,7 @@
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        'X-CSRFToken': csrftoken
       },
       body: JSON.stringify(data),
     };
@@ -709,7 +727,7 @@
   ] {% endcomment %}
 </script>
 
-<script>
+{% comment %} <script>
   var logoutbtn = document.querySelector(".logout-btn");
   logoutbtn.addEventListener("click", function () {
     flashMessage(
@@ -717,4 +735,4 @@
       "Đăng xuất thành công, đang trở về trang đăng nhập!"
     );
   });
-</script>
+</script> {% endcomment %}

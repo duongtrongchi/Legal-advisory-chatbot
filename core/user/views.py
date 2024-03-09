@@ -58,4 +58,4 @@ def register_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request, 'Đăng xuất thành công!')
-    return redirect('font-end-template')
+    return redirect('user-login')
