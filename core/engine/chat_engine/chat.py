@@ -32,8 +32,10 @@ logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
 os.environ['OPENAI_API_KEY'] = os.environ['OPENAI_API_KEY']
+
 ES_CLOUD_ID = os.environ['ES_CLOUD_ID']
-ES_API_KEY = os.environ['ES_API_KEY']
+ES_API_KEY = os.environ['ES_API']
+
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 llm = OpenAI(model="gpt-3.5-turbo")
@@ -90,7 +92,7 @@ class ChatEngine:
     def chat_en(self, queries: list[str], query_origin):
 
         start_time = time.time()
-        
+
         retriever = self.index.as_retriever(
             similarity_top_k=3,
             vector_store_query_mode="hybrid",
@@ -108,7 +110,7 @@ class ChatEngine:
         seen_ids = set()
         retrieved_nodes = [obj for obj in retrieved_nodes if obj.get_score() > 0.5 and obj.get_content() not in seen_ids and not seen_ids.add(obj.get_content())]
         print(len(retrieved_nodes))
-        
+
         end_time = time.time()
         elapsed_retrieval_time = end_time - start_time
 
@@ -121,7 +123,7 @@ class ChatEngine:
         #     choice_batch_size=5,
         #     top_n=3,
         # )
-        
+
         # retrieved_nodes = rerank.postprocess_nodes(
         #     retrieved_nodes, query_bundle
         # )
@@ -131,7 +133,7 @@ class ChatEngine:
             retrieved_nodes, query_bundle
         )
         retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
-        
+
         end_time = time.time()
         elapsed_rerank_time = end_time - start_time
 
@@ -141,7 +143,7 @@ class ChatEngine:
         )
 
         window_nodes = postprocessor.postprocess_nodes(retrieved_nodes)
-        
+
         # Get references
         references = []
         for i in window_nodes:
@@ -169,7 +171,7 @@ class ChatEngine:
         print(response)
         end_time = time.time()
         elapsed_generate_time = end_time - start_time
-        
+
         print(f"Retrieval time: {elapsed_retrieval_time}")
         print(f"Rerank time: {elapsed_rerank_time}")
         print(f"Generate response time: {elapsed_generate_time}")
@@ -177,7 +179,7 @@ class ChatEngine:
 
 
 def generate_queries(query: str, num_queries: int = 2):
-    
+
    response = llm.predict(
       REWRITE_QUERIES_TEMPLATE, num_queries=num_queries, query=query
    )
@@ -186,7 +188,7 @@ def generate_queries(query: str, num_queries: int = 2):
    queries_str = "\n".join(queries)
    print(f"Generated queries:\n{queries_str}")
    print("="*100)
-   
+
    return queries
 
 
