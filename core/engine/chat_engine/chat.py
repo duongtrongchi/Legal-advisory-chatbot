@@ -131,7 +131,7 @@ class ChatEngine:
         retrieved_nodes = self.rerank.postprocess_nodes(
             retrieved_nodes, query_bundle
         )
-        retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.5]
+        retrieved_nodes = [node for node in retrieved_nodes if node.get_score() > 0.3]
 
         end_time = time.time()
         elapsed_rerank_time = end_time - start_time
