@@ -7,6 +7,8 @@ import openai
 from dotenv import load_dotenv
 load_dotenv()
 
+ES_CLOUD_ID = os.environ['ES_CLOUD']
+ES_API_KEY = os.environ['ES_API']
 
 from llama_index import ServiceContext, LLMPredictor, OpenAIEmbedding, PromptHelper
 from llama_index.llms import OpenAI
@@ -42,8 +44,8 @@ prompt_helper = PromptHelper(
 
 vector_store = ElasticsearchStore(
   index_name="law_bot",
-  es_cloud_id="a360a60c18784a4288ef610006c3b861:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDAwZGM4M2JiYjU3NjRjZTliZDJlYjEyNTAwNTA2N2MxJDQzOTI5MzIyNGNlMjRiZDZhOTRkODYzOWQyZTNlYWJl",
-  es_api_key="bUR1b3lZMEIzSUxOY1MxYjRvMEQ6ZE9PMS01UGlSSVdvdEhncUVkWmlWQQ=="
+  es_cloud_id=ES_CLOUD_ID,
+  es_api_key=ES_API_KEY
 )
 storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
