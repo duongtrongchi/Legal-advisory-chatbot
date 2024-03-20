@@ -26,6 +26,36 @@ openai.api_key = os.getenv('OPENAI_API_KEY')
 import pandas as pd
 import json
 
+def read_data_test(filename):
+    
+    # Read data test file
+    df = pd.read_excel(filename)
+
+    # Convert DataFrame to a list of dictionaries
+    list_of_dicts = df.to_dict(orient='records')
+
+    return list_of_dicts
+
+# pip install openpyxl
+from openpyxl import Workbook
+
+def export_data_test(filename, data_list):
+
+    # Create a new Workbook
+    wb = Workbook()
+
+    # Select the active worksheet
+    ws = wb.active
+
+    # Set the column headers
+    ws.append(['question', 'ground_truth', 'answer'])
+    
+    for data in data_list:
+        ws.append([data['question'], data['ground_truth'], data['answer']])
+
+    # Save the workbook
+    wb.save(filename)
+
 # ...Lưu ý: Comment lại đoạn này khi chạy code Ragas để hệ thống không chạy mấy phần dư thừa như call api openai,...
 # ......................................Đoạn generation tập test ............................................ 
 
@@ -33,8 +63,6 @@ import json
 # from simpleRAG import genaration_qa
 # from chat import ChatEngine, generate_queries
 # from testIntent import intent_classification
-# # pip install openpyxl
-# from openpyxl import Workbook
 
 
 # def get_answer_and_contexts_simple(question):
@@ -64,33 +92,6 @@ import json
 #             contexts.append(node['content'])
         
 #     return response, contexts
-
-# def read_data_test(filename):
-    
-#     # Read data test file
-#     df = pd.read_excel(filename)
-
-#     # Convert DataFrame to a list of dictionaries
-#     list_of_dicts = df.to_dict(orient='records')
-
-#     return list_of_dicts
-
-# def export_data_test(filename, data_list):
-
-#     # Create a new Workbook
-#     wb = Workbook()
-
-#     # Select the active worksheet
-#     ws = wb.active
-
-#     # Set the column headers
-#     ws.append(['question', 'ground_truth'])
-    
-#     for data in data_list:
-#         ws.append([data['question'], data['ground_truth']])
-
-#     # Save the workbook
-#     wb.save(filename)
 
 # ................................end................................................
     
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     )
     
     print(result)
+    export_data_test('output.xlsx', data_list)
     
     
     # ...........................simple RAG......................................
