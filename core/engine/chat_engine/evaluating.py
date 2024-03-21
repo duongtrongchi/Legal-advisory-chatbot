@@ -2,8 +2,11 @@ import os
 import nest_asyncio
 from dotenv import load_dotenv
 
+import asyncio
 nest_asyncio.apply()
 load_dotenv()
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+# asyncio.run(main())
 
 from datasets import Dataset
 
@@ -48,10 +51,10 @@ def export_data_test(filename, data_list):
     ws = wb.active
 
     # Set the column headers
-    ws.append(['question', 'ground_truth', 'answer'])
+    ws.append(['question', 'ground_truth', 'answer_advance_rag', 'answer_simple_rag'])
     
     for data in data_list:
-        ws.append([data['question'], data['ground_truth'], data['answer']])
+        ws.append([data['question'], data['ground_truth'], data['answer'], data['answer_simple']])
 
     # Save the workbook
     wb.save(filename)
@@ -61,8 +64,6 @@ def export_data_test(filename, data_list):
 
 # from prompts import text_qa_template
 # from simpleRAG import genaration_qa
-# from chat import ChatEngine, generate_queries
-# from testIntent import intent_classification
 
 
 # def get_answer_and_contexts_simple(question):
@@ -74,6 +75,8 @@ def export_data_test(filename, data_list):
         
 #     return answer, contexts
 
+# from chat import ChatEngine, generate_queries
+# from testIntent import intent_classification
 # def get_answer_and_contexts(question):
     
 #     intent = json.loads(intent_classification(question))
@@ -105,56 +108,72 @@ if __name__ == "__main__":
     
     # chatEngine = ChatEngine()
     # data_advanced_rag = [{"question": i['question'], "ground_truth": i['ground_truth']} for i in data_list]
+    # data_advanced_rag = data_advanced_rag[100:102]
+    # print(data_advanced_rag)
     # for data in data_advanced_rag:
     #     answer, contexts = get_answer_and_contexts(data['question'])
     #     data["answer"] = answer
     #     data["contexts"] = contexts
+        
+    #     with open('data_advanced_rag.json', 'r') as file:
+    #         # Load JSON data from the file
+    #         data_tmp= json.load(file)
+    #     data_tmp.append(data)
+        
+    #     print(len(data_tmp))
     
-    # with open('data_advanced_rag.json', 'w') as file:
-    #     json.dump(data_advanced_rag, file)
+    #     with open('data_advanced_rag.json', 'w') as file:
+    #         json.dump(data_tmp, file)
     
     # 2. Phần Ragas ...................................................................
     
     # Use Ragas for evaluating after generating step
-    with open('data_advanced_rag.json', 'r') as file:
-        # Load JSON data from the file
-        data_list= json.load(file)
+    # with open('data_advanced_rag.json', 'r') as file:
+    #     # Load JSON data from the file
+    #     data_list= json.load(file)
     
-    data_list = [i for i in data_list if len(i['contexts']) != 0 ]
-    print(len(data_list))
+    # data_list = [i for i in data_list if len(i['contexts']) != 0 ]
+    # print(len(data_list))
+    # # data_list = data_list[10:15]
+    # # print(data_list)
     
-    ds = Dataset.from_list(data_list)
+    # ds = Dataset.from_list(data_list)
     
-    result = evaluate(
-        ds,
-        metrics=[
-            context_precision,
-            faithfulness,
-            answer_relevancy,
-            context_recall,
-        ],
-    )
+    # result = evaluate(
+    #     ds,
+    #     metrics=[
+    #         context_precision,
+    #         faithfulness,
+    #         answer_relevancy,
+    #         context_recall,
+    #     ],
+    # )
     
-    print(result)
-    export_data_test('output.xlsx', data_list)
+    # print(result)
+    # export_data_test('output.xlsx', data_list)
     
     
     # ...........................simple RAG......................................
-    # data_simple_rag = [{"question": i['question'], "ground_truth": i['ground_truth']} for i in data_list]
+    # with open('data_advanced_rag.json', 'r') as file:
+    #     # Load JSON data from the file
+    #     data_list= json.load(file)
+        
+    # data_simple_rag = [{"question": i['question'], "ground_truth": i['ground_truth'], "answer": i['answer']} for i in data_list]
     # for data in data_simple_rag:
-    #     answer, contexts = get_answer_and_contexts_simple(data['question'])
-    #     data["answer"] = answer
+    #     answer_simple, contexts = get_answer_and_contexts_simple(data['question'])
+    #     data["answer_simple"] = answer_simple
     #     data["contexts"] = contexts
     
-    # print(data_simple_rag)
     # with open('data_simple_rag.json', 'w') as file:
     #     json.dump(data_simple_rag, file)
 
     
     # Use Ragas for evaluating after generating step
-    # with open('data_simple_rag.json', 'r') as file:
-    #     # Load JSON data from the file
-    #     data_list= json.load(file)
+    with open('data_simple_rag.json', 'r') as file:
+        # Load JSON data from the file
+        data_list= json.load(file)
+    
+    export_data_test('output_test.xlsx', data_list)
     # data_list = [i for i in data_list if len(i['contexts']) != 0 ]
     # print(len(data_list))
     
